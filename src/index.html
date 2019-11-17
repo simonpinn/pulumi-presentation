@@ -3,16 +3,12 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 		<title>reveal.js</title>
-
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
-
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
-
 		<!-- Printing and PDF exports -->
 		<script>
 			var link = document.createElement( 'link' );
@@ -36,23 +32,2234 @@
 						<li>Full stack dev with a mostly Microsoft background</li>
 						<li>20 years as a dev, last 12 as a contractor</li>
 						<li>C# is my mainstay, though love F#</li>						
-						<li>Not afraid of the console!</li>
+						<li>Not afraid of the console!!!!</li>
 					</ul>
 					
 					<aside class="notes">
-						
+						I also surf, a lot, run, swim and still enjoy to code
 					</aside>
+				</section>
+				<section>
+					<h2>Pulumi</h2>
+					<p>Pronunciation</p>
+					<p style="font-style: italic;">"Pull me (up)"</p>
+					<p style="font-size: small;">At least that's how I read it</a>
+				</section>
+				<section>
+					<h2>Background</h2>
+					<ul>
+						<li>I am not an expert!</li>
+						<li>Captivated by a presentation at NDC, by Jake Ginnivan
+							<ul>
+								<li>https://github.com/JakeGinnivan/ndc-sydney-pulumi-demo</li>
+							</ul>
+						</li>
+						<li>Presented a cutdown of this to one of my clients</li>
+						<li>Have been playing with it in real life with another client</li>
+						<li>I'll be pointing out some aspects that I find interesting...</li>
+					</ul>
+				</section>
+				<section>
+					<h2>The elevator pitch</h2>
+					<p>Infrastructure as code</p>
+					<p>Desired state expressed as code</p>
+					<p>Code, not configuration</p>
+				</section>
+				<section>					
+					<h3>The story so far...</h3>
+					<p>We used to throw this stuff to a (black) "ops" team</p>
+					<p>DevOps became a thing, we used CLIs and desired state orchestrators/templates</p>
+					<p>Puppet, Chef, ARM, Terraform, and whatever cloud CLI was available</p>
+					<p>When I put on my DevOps hat</p>
+					<ul>
+						<li>I expect to express my desired state intention</li>
+						<li>I expect this to be simple</li>
+						<li>Who finds ARM simple….!?</li>
+					</ul>
+					<aside class="notes">
+						WHY another framework
+						WHY are we solving this problem again
+					</aside>
+				</section>
+				<section>
+					<h3>ARM - Realworld</h3>
+					<pre>
+						<code class="hljs json" style="font-size: x-small;">
+{
+"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+"contentVersion": "1.0.0.0",
+"apiProfile": "2017-03-09-profile",
+"parameters": {
+	"environmentName": {
+		"type": "string"
+	},
+	"testParameter": {
+		"type": "string",
+		"defaultValue": "nothing passed in"
+	},
+	"companyCode": {
+		"type": "string",
+		"defaultValue": "rock",
+		"minLength": 1,
+		"maxLength": 4,
+		"metadata": {
+			"description": "A short code to define resources owned by the company (for unique global constraints) https://propertytree.atlassian.net/wiki/spaces/DEVOPS/pages/92766335/Naming+Conventions"
+		}
+	},
+	"productName": {
+		"type": "string",
+		"allowedValues": [
+			"SharedServices",
+			"FileSmart",
+			"Communicator",
+			"RestProfessional",
+			"StrataMaster",
+			"Tardis-Api",
+			"PropertyTree",
+			"InvoiceGenius",
+			"Ego",
+			"TenantDownload"
+		]
+	},
+	"geoReplication": {
+		"type": "bool",
+		"defaultValue": false
+	},
+	"staging": {
+		"type": "bool",
+		"defaultValue": false
+	},
+	"artifactsLocation": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"artifactsLocationSasToken": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"templateVersion": {
+		"type": "string"
+	},
+	"prefixDeploy": {
+		"type": "bool",
+		"defaultValue": false
+	},
+	"ReportsPassword": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"SchedulerPassword": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"tardisHost": {
+		"type": "string",
+		"defaultValue": "",
+		"metadata": {
+			"description": "host address for the Tardis API (that PT talks to). Resource deployed with Tardis (not this template). "
+		}
+	},
+	"TardisSigningKey": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"applicationKeyTardis": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"copyDatabase": {
+		"type": "bool",
+		"defaultValue": false,
+		"metadata": {
+			"description": "Copy database from copySourceDatabase to initialise a new database."
+		}
+	},
+	"copyDatabaseSource": {
+		"type": "string",
+		"defaultValue": "",
+		"metadata": {
+			"description": "ResourceId of an Azure SQL Database to use to create a new database."
+		}
+	},
+	"dbAdministratorLoginPassword": {
+		"type": "securestring",
+		"defaultValue": "",
+		"metadata": {
+			"description": "Password for dbadmin user on the sql database."
+		}
+	},
+	"acrName": {
+		"type": "string",
+		"defaultValue": "rockendregistryservice"
+	},
+	"acrPassword": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"invoiceQueueName": {
+		"type": "string",
+		"defaultValue": "inv-pigw-queue"
+	},
+	"vstsServicePrincipalObjectId": {
+		"type": "string",
+		"metadata": {
+			"description": "ObjectId of the VSTS Agent Service Principal"
+		}
+	},
+	"vnetName": {
+		"type": "string",
+		"defaultValue": "",
+		"metadata": {
+			"description": "This vnet contains the SQL VM. existingDatabaseConnectionString should be passed if a value is provided for VNet Name"
+		}
+	},
+	"vnetResourceGroupName": {
+		"type": "string",
+		"defaultValue": "",
+		"metadata": {
+			"description": "This resource group that contains the vnet"
+		}
+	},
+	"existingDatabaseConnectionString": {
+		"type": "string",
+		"defaultValue": "",
+		"metadata": {
+			"description": "If a value is provided this connection string will be used for Bedrock and no DB resources will be created."
+		}
+	},
+	"existingContainerInstanceIp": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"SearchHtml": {
+		"type": "object",
+		"defaultValue": {
+			"username": "",
+			"password": ""
+		},
+		"metadata": {
+			"description": "username and password to connect to mongoDb search for HTML app."
+		}
+	},
+	"SearchScheduler": {
+		"type": "object",
+		"defaultValue": {
+			"username": "",
+			"password": ""
+		},
+		"metadata": {
+			"description": "username and password to connect to mongoDb search for Scheduler."
+		}
+	},
+	"existingStorageAccount": {
+		"type": "object",
+		"defaultValue": {
+			"Default": "",
+			"OutboundMessageStorage": "",
+			"AzureStorage": "",
+			"AzureWebJobsDashboard": "",
+			"AzureWebJobsStorage": ""
+		},
+		"metadata": {
+			"description": "ConnectionString for an existing storage account(s) to use. New account will NOT be created if a value is passed for Default."
+		}
+	},
+	"existingServiceBus": {
+		"type": "object",
+		"defaultValue": {
+			"Maintenance": "",
+			"RecurringInvoice": "",
+			"DirectDebit": "",
+			"InvoiceWhisperer": "",
+			"BankStatement": "",
+			"Utilities": "",
+			"Default": ""
+		},
+		"metadata": {
+			"description": "ConnectionStrings for an existing Azure service bus. New ServiceBus will still always be created."
+		}
+	},
+	"twilio": {
+		"type": "object",
+		"defaultValue": { "EnableCallback": "", "TestMode": "", "AccountSID": "", "AuthToken": "" },
+		"metadata": {
+			"description": "AppSetting to configure Twilio"
+		}
+	},
+	"defaultDbUser": {
+		"type": "string",
+		"defaultValue": "Bedrock",
+		"metadata": {
+			"description": "Bedrock Database uses 3 different Users to connect to different schemas, this users and passwords need to be created in keyvault"
+		}
+	},
+	"defaultDbUserPassword": {
+		"type": "securestring",
+		"defaultValue": "",
+		"metadata": {
+			"description": "Password for dbadmin user on the sql database."
+		}
+	},
+	"defaultDbAdminUser": {
+		"type": "string",
+		"defaultValue": "BedrockAdmin"
+	},
+	"defaultDbAdminUserPassword": {
+		"type": "securestring",
+		"defaultValue": "",
+		"metadata": {
+			"description": "Password for dbadmin user on the sql database."
+		}
+	},
+	"defaultDbServiceUser": {
+		"type": "string",
+		"defaultValue": "BedrockService"
+	},
+	"defaultDbServiceUserPassword": {
+		"type": "securestring",
+		"defaultValue": "",
+		"metadata": {
+			"description": "Password for dbadmin user on the sql database."
+		}
+	},
+	"identityServerEnabled": {
+		"type": "bool",
+		"defaultValue": false
+	},
+	"identityServerHost": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"clientId": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"clientSecret": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"invoiceGeniusUrl": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"cORSOrigins": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"pTHost": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"propertyTreeHost":{
+		"type": "string",
+		"defaultValue": ""
+	},
+	"eWayAPIPassword": {
+		"type": "securestring",
+		"defaultValue": ""
+	},
+	"eWayAPIKey": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"eWayEncryptionKey": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"eWayUseSandbox": {
+		"type": "string",
+		"defaultValue": "true"
+	},
+	"sumoUrl": {
+		"type": "string",
+		"defaultValue": ""
+	},
+	"sumoSource": {
+		"type": "string",
+		"defaultValue": "PT"
+	},
+	"Signalr":{
+		"type": "string",
+		"defaultValue": ""
+	},
+	"auth0AppUrl":{
+		"type": "string",
+		"defaultValue": ""
+	}
+},
+"variables": {
+	"vstsKeyVaultAccessPolicy": {
+		"applicationId": "",
+		"objectId": "[parameters('vstsServicePrincipalObjectId')]",
+		"permissions": {
+			"keys": [],
+			"secrets": [
+				"list",
+				"get"
+			],
+			"certificates": [],
+			"storage": []
+		}
+	},
+	"deploymentPrefix": "[if(parameters('prefixDeploy'), substring(concat('u', uniqueString(resourceGroup().id, deployment().name)), 0, 4), '')]",
+	"templatePaths": {
+		"storageaccount": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/storageaccount/storageaccount.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"vnet": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/vnet/vnet.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"keyvault": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/keyvault/keyvault.azuredeploy.json', parameters('artifactsLocationSasToken'))]",
+			"secret": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/keyvault/keyvault.secret.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"servicebus": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/servicebus/servicebus.azuredeploy.json', parameters('artifactsLocationSasToken'))]",
+			"topic": {
+				"subscription": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/servicebus/servicebus.topic.subscription.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+			}
+		},
+		"sqlserver": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/sqldb/sqlserver.azuredeploy.json', parameters('artifactsLocationSasToken'))]",
+			"replica": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/sqldb/sqlserver.replica.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"cosmosdb": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/cosmosdb/cosmosdb.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"webapp": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/webapp/webapp.azuredeploy.json', parameters('artifactsLocationSasToken'))]",
+			"serverfarm": {
+				"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/webapp/webapp.serverfarm.azuredeploy.json', parameters('artifactsLocationSasToken'))]",
+				"site": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/webapp/webapp.serverfarm.site.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+			}
+		},
+		"hostingEnvironment": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/hostingenvironment/hostingenvironment.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"rediscache": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/rediscache/rediscache.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"containerinstance": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/containerinstance/containerinstance.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		},
+		"cdn": {
+			"root": "[concat(parameters('artifactsLocation'),'/',parameters('templateVersion'),'/cdn/cdn.azuredeploy.json', parameters('artifactsLocationSasToken'))]"
+		}
+	},
+	"environmentCode": "[ concat(variables('deploymentPrefix'), parameters('environmentName'), '-', parameters('companyCode')) ]",
+	"namePrefix": {
+		"global": "[ toLower(concat(variables('environmentCode'),'-',variables('productcode'), '-')) ]",
+		"primary": "[ toLower(concat(variables('environmentCode'),'-',variables('productcode'), '-', variables('regionCode').primary,'-')) ]",
+		"secondary": "[ toLower(concat(variables('environmentCode'),'-',variables('productcode'), '-', variables('regionCode').secondary,'-')) ]"
+	},
+	"productCode": "[ variables('productList')[parameters('productName')] ]",
+	"productList": {
+		"Communicator": "CM",
+		"Ego": "IDM",
+		"FileSmart": "FS",
+		"InvoiceGenius": "IG",
+		"PropertyTree": "PT",
+		"RestProfessional": "RP",
+		"SharedServices": "SS",
+		"StrataMaster": "SM",
+		"Tardis": "TD",
+		"TenantDownload": "TEND"
+	},
+	"regionCode": {
+		"primary": "[ variables('regionList')[variables('location').primary].Code ]",
+		"secondary": "[ variables('regionList')[variables('location').secondary].Code ]"
+	},
+	"location": {
+		"primary": "[ resourceGroup().location ]",
+		"secondary": "[ variables('regionList')[resourceGroup().location].PartnerRegion ]"
+	},
+	"regionList": {
+		"AustraliaEast": {
+			"FullName": "Australia East",
+			"Code": "SYD",
+			"RegionName": "Australia",
+			"LocationName": "Sydney",
+			"PartnerRegion": "AustraliaSoutheast"
+		},
+		"AustraliaSoutheast": {
+			"FullName": "Australia Southeast",
+			"Code": "MEL",
+			"RegionName": "Australia",
+			"LocationName": "Melbourne",
+			"PartnerRegion": "AustraliaEast"
+		},
+		"EastAsia": {
+			"FullName": "East Asia",
+			"Code": "HK",
+			"RegionName": "Asia",
+			"LocationName": "Hong Kong",
+			"PartnerRegion": "SoutheastAsia"
+		},
+		"SoutheastAsia": {
+			"FullName": "Southeast Asia",
+			"Code": "SP",
+			"RegionName": "Asia",
+			"LocationName": "Singapore",
+			"PartnerRegion": "EastAsia"
+		},
+		"EastUS": {
+			"FullName": "East US",
+			"Code": "USE",
+			"RegionName": "United States",
+			"PartnerRegion": "WestUS"
+		},
+		"WestUS": {
+			"FullName": "West US",
+			"Code": "USW",
+			"RegionName": "United States",
+			"PartnerRegion": "EastUS"
+		}
+	},
+	"regionName": "[ variables('regionList')[resourceGroup().location].RegionName ]",
+	"globalParameters": {
+		"namePrefix": "[ variables('namePrefix') ]",
+		"location": {
+			"primary": "[ variables('location').primary ]",
+			"secondary": "[ variables('location').secondary ]",
+			"list": "[ variables('regionList') ]"
+		},
+		"geoReplication": "[ parameters('geoReplication') ]",
+		"templatePaths": "[ variables('templatePaths') ]",
+		"standardTags": {
+			"productCode": "[ variables('productCode') ]",
+			"environmentCode": "[ variables('environmentCode') ]",
+			"productName": "[ parameters('productName') ]",
+			"environmentType": "[ parameters('environmentName') ]",
+			"regionName": "[ variables('regionName') ]",
+			"templateVersion": "[parameters('templateVersion')]"
+		}
+	},
+	"siteNamePrefix": {
+		"primary": "[concat(parameters('environmentName'),'-',parameters('companyCode'),'-',variables('productCode'),'-',variables('regionCode').primary)]",
+		"secondary": "[concat(parameters('environmentName'),'-',parameters('companyCode'),'-',variables('productCode'),'-',variables('regionCode').secondary)]"
+	},
+	"mongodb": {
+		"username": "root",
+		"password": "[concat('P', uniqueString(resourceGroup().id, '7308dc38-cf9f-4a6a-b96b-3df1f4924d8f'), 'x', '!')]"
+	},
+	"registryServer": "[concat(parameters('acrName'),'.azurecr.io')]",
+	"copyDatabaseSource": "[if(parameters('copyDatabase'), parameters('copyDatabaseSource'), '')]",
+	"isProd": "[contains(parameters('environmentName'), 'prod')]",
+	"schedulerWebJobConfig": {
+		"dev": [{
+			"name": "scheduler1",
+			"appsettings": [
+			{
+				"name": "SearchProvider",
+				"value": "[ variables('SearchProvider')]"
+			},
+			{
+				"name": "SearchUsername",
+				"value": "[ parameters('SearchScheduler').username]"
+			},
+			{
+				"name": "SearchPassword",
+				"value": "[ parameters('SearchScheduler').password]"
+			},
+			{
+				"name": "EWayEncryptionKey",
+				"value": "[ parameters('eWayEncryptionKey')]"
+			},
+			{
+				"name": "EWayAPIKey",
+				"value": "[ parameters('eWayAPIKey')]"
+			},
+			{
+				"name": "EWayUseSandbox",
+				"value": "[ parameters('eWayUseSandbox')]"
+			},
+			{
+				"name": "EWayAPIPassword",
+				"value": "[ parameters('eWayAPIPassword')]"
+			}],
+			"connectionStrings": [],
+			"ipSecurityRestrictions": []
+		}],
+		"prod": [{
+			"name": "scheduler1",
+			"appsettings": [{
+				"name": "TaskGroup",
+				"value": "1"
+			}],
+			"connectionStrings": [],
+			"ipSecurityRestrictions": []
+		}, {
+			"name": "scheduler2",
+			"appsettings": [
+			{
+				"name": "SearchProvider",
+				"value": "[ variables('SearchProvider')]"
+			},
+			{
+				"name": "SearchUsername",
+				"value": "[ parameters('SearchScheduler').username]"
+			},
+			{
+				"name": "SearchPassword",
+				"value": "[ parameters('SearchScheduler').password]"
+			},
+			{
+				"name": "TaskGroup",
+				"value": "2"
+			}],
+			"connectionStrings": [],
+			"ipSecurityRestrictions": []
+		}, {
+			"name": "scheduler3",
+			"appsettings": [{
+				"name": "TaskGroup",
+				"value": "3"
+			}],
+			"connectionStrings": [],
+			"ipSecurityRestrictions": []
+		}, {
+			"name": "scheduler4",
+			"appsettings": [{
+				"name": "TaskGroup",
+				"value": "4"
+			},
+			{
+				"name": "EWayEncryptionKey",
+				"value": "[ parameters('eWayEncryptionKey')]"
+			},
+			{
+				"name": "EWayAPIKey",
+				"value": "[ parameters('eWayAPIKey')]"
+			},
+			{
+				"name": "EWayUseSandbox",
+				"value": "[ parameters('eWayUseSandbox')]"
+			},
+			{
+				"name": "EWayAPIPassword",
+				"value": "[ parameters('eWayAPIPassword')]"
+			}],
+			"connectionStrings": [],
+			"ipSecurityRestrictions": []
+		}]
+	},
+	"syncServiceBusItems":{
+		"topics":[
+			{
+				"name":"OngoingSync"
+			},
+			{
+				"name":"InitialSync"
+			}
+		]
+	},
+	"maintenanceSbQueues":[
+		"MaintenanceServicesReplyQueue",
+		"MaintenanceServicesRefreshQueue"
+		],
+	"keyVaultNameSuffix":"kv",   
+	"pTHost": "[if(not(empty( parameters('pTHost'))), parameters('pTHost'), concat('https://', variables('siteNamePrefix').primary, '-html.azurewebsites.net'))]",
+	"SearchProvider": "MongoDB",
+	"existingStorageAccount": {            
+		"Default": "[ if(not(empty(parameters('existingStorageAccount').Default)), parameters('existingStorageAccount').Default, '')]",
+		"OutboundMessageStorage": "[ if(not(empty(parameters('existingStorageAccount').OutboundMessageStorage)), parameters('existingStorageAccount').OutboundMessageStorage, parameters('existingStorageAccount').Default)]",
+		"AzureStorage": "[ if(not(empty(parameters('existingStorageAccount').AzureStorage)), parameters('existingStorageAccount').AzureStorage, parameters('existingStorageAccount').Default)]",
+		"AzureWebJobsDashboard": "[ if(not(empty(parameters('existingStorageAccount').AzureWebJobsDashboard)), parameters('existingStorageAccount').AzureWebJobsDashboard, parameters('existingStorageAccount').Default)]",
+		"AzureWebJobsStorage": "[ if(not(empty(parameters('existingStorageAccount').AzureWebJobsStorage)), parameters('existingStorageAccount').AzureWebJobsStorage, parameters('existingStorageAccount').Default)]"
+	},
+	"existingServiceBus": {
+		"Maintenance": "[ if(not(empty(parameters('existingServiceBus').Maintenance)), parameters('existingServiceBus').Maintenance, parameters('existingServiceBus').Default)]",
+		"RecurringInvoice": "[ if(not(empty(parameters('existingServiceBus').RecurringInvoice)), parameters('existingServiceBus').RecurringInvoice, parameters('existingServiceBus').Default)]",
+		"DirectDebit": "[ if(not(empty(parameters('existingServiceBus').DirectDebit)), parameters('existingServiceBus').DirectDebit, parameters('existingServiceBus').Default)]",
+		"InvoiceWhisperer": "[ if(not(empty(parameters('existingServiceBus').InvoiceWhisperer)), parameters('existingServiceBus').InvoiceWhisperer, parameters('existingServiceBus').Default)]",
+		"BankStatement": "[ if(not(empty(parameters('existingServiceBus').BankStatement)), parameters('existingServiceBus').BankStatement, parameters('existingServiceBus').Default)]",
+		"Utilities": "[ if(not(empty(parameters('existingServiceBus').Utilities)), parameters('existingServiceBus').Utilities, parameters('existingServiceBus').Default)]",
+		"Default": "[ if(not(empty(parameters('existingServiceBus').Default)), parameters('existingServiceBus').Default, '')]"
+	}
+},
+"resources": [{
+		"name": "[concat(deployment().name, '-', variables('keyVaultNameSuffix'))]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"name": {
+					"value": "[variables('keyVaultNameSuffix')]"
+				},
+				"enabledForTemplateDeployment": {
+					"value": true
+				},
+				"accessPolicyEntries": {
+					"value": [
+						"[variables('vstsKeyVaultAccessPolicy')]",
+						{
+							"applicationId": "",
+							"tenantId": "16c59b4f-1efc-4c14-bc4d-21da0878f3a1",
+							"objectId": "9218e7da-5b5e-4021-9524-15ccd5f19c61",
+							"permissions": {
+								"keys": [
+									"Get",
+									"List"
+								],
+								"secrets": [
+									"Get",
+									"List"
+								],
+								"certificates": [
+									"Get",
+									"List"
+								]
+							}
+						}
+					]
+				},
+				"secrets": { 
+					"value": {
+						"list": [{
+								"name": "storage-connection",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').Default)), variables('existingStorageAccount').Default, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "sync-storage-connection",
+								"contentType": "text/plain",
+								"value": "[reference(concat(deployment().name, '-sync-storage')).outputs.primaryConnectionString.value]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "AzureStorage",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').AzureStorage)), variables('existingStorageAccount').AzureStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "OutboundMessageStorage",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').OutboundMessageStorage)), variables('existingStorageAccount').OutboundMessageStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "AzureWebJobsDashboard",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').AzureWebJobsDashboard)), variables('existingStorageAccount').AzureWebJobsDashboard, reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "AzureWebJobsStorage",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').AzureWebJobsStorage)), variables('existingStorageAccount').AzureWebJobsStorage, reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "MicrosoftWindowsAzurePluginsDiagnosticsConnectionString",
+								"contentType": "text/plain",
+								"value": "[if(not(empty(variables('existingStorageAccount').Default)), variables('existingStorageAccount').Default, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "RedisCacheConnectionString",
+								"contentType": "text/plain",
+								"value": "[reference(concat(deployment().name, '-rediscache')).outputs.redisConnectionString.value]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "MaintenanceServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').Maintenance)), variables('existingServiceBus').Maintenance, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "RecurringInvoiceServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').RecurringInvoice)), variables('existingServiceBus').RecurringInvoice, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "DirectDebitServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').DirectDebit)), variables('existingServiceBus').DirectDebit, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "InvoiceWhispererServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').InvoiceWhisperer)), variables('existingServiceBus').InvoiceWhisperer, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "BankStatementServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').BankStatement)), variables('existingServiceBus').BankStatement, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "UtilitiesManagerServiceBusConnectionString",
+								"contentType": "text/plain",
+								"secretType": "secret",
+								"value": "[if(not(empty(variables('existingServiceBus').Utilities)), variables('existingServiceBus').Utilities, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+							},
+							{
+								"name": "EWayAPIPassword",
+								"contentType": "text/plain",
+								"value": "[parameters('eWayAPIPassword')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "ReportsPassword",
+								"contentType": "text/plain",
+								"value": "[parameters('ReportsPassword')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "TardisSigningKey",
+								"contentType": "text/plain",
+								"value": "[parameters('TardisSigningKey')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "ApplicationKeyTardis",
+								"contentType": "text/plain",
+								"value": "[parameters('applicationKeyTardis')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "MongoUsername",
+								"contentType": "text/plain",
+								"value": "[ variables('mongodb').username ]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "MongoPassword",
+								"contentType": "text/plain",
+								"value": "[ variables('mongodb').password ]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "SearchPassword",
+								"contentType": "text/plain",
+								"value": "[parameters('SchedulerPassword')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "invoiceQueueName",
+								"contentType": "text/plain",
+								"value": "[parameters('invoiceQueueName')]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "BedrockConnectionString",
+								"contentType": "text/plain",
+								"value": "[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbUser')),'#generic-user-password#',parameters('defaultDbUserPassword'))]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "BedrockServiceConnectionString",
+								"contentType": "text/plain",
+								"value": "[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbServiceUser')),'#generic-user-password#',parameters('defaultDbServiceUserPassword'))]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "BedrockAdminConnectionString",
+								"contentType": "text/plain",
+								"value": "[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbAdminUser')),'#generic-user-password#',parameters('defaultDbAdminUserPassword'))]",
+								"secretType": "Secret"
+							},
+							{
+								"name": "PropertyTreeServiceBusConnectionString",
+								"contentType": "text/plain",                                    
+								"value": "[if(not(empty(variables('existingServiceBus').Maintenance)), variables('existingServiceBus').Maintenance, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]",
+								"secretType": "Secret"
+							}
+						]
+					}
+				},
+				"enableSoftDelete": {
+					"value": false
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').keyvault.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		},
+		"dependsOn": [
+			"[concat(deployment().name, '-storage')]",
+			"[concat(deployment().name, '-sync-storage')]",
+			"[concat(deployment().name, '-rediscache')]",
+			"[concat(deployment().name, '-sb')]",
+			"[concat(deployment().name, '-containerinstance')]"
+		]
+	},
+	{
+		"name": "[concat(deployment().name, '-storage')]",
+		"type": "Microsoft.Resources/deployments",
+		"condition": "[empty(parameters('existingStorageAccount').Default)]" ,
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"name": {
+					"value": "sharedstorage"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').storageaccount.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-sync-storage')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"name": {
+					"value": "syncstorage"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').storageaccount.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-web')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"dependsOn": [
+			"[concat(deployment().name, '-kv')]"
+		],
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"deploymentKeyVaultName": {
+					"value": "[reference(concat(deployment().name, '-', variables('keyVaultNameSuffix'))).outputs.keyVaultName.value]"
+				},
+				"farmName": {
+					"value": "web"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"vnetName": {
+					"value": "[parameters('vnetName')]"
+				},
+				"vnetResourceGroupName": {
+					"value": "[parameters('vnetResourceGroupName')]"
+				},
+				"staging": {
+					"value": "[ parameters('staging')]"
+				},
+				"sites": {
+					"value": [{
+						"name": "html",
+						"appsettings": [
+							{
+								"name": "ClientId",
+								"value": "[ parameters('clientId')]"
+							},
+							{
+								"name": "ClientSecret",
+								"value": "[ parameters('clientSecret')]"
+							},
+							{
+								"name": "CORSOrigins",
+								"value": "[ parameters('cORSOrigins')]"
+							},
+							{
+								"name": "IdentityServerEnabled",
+								"value": "[ parameters('identityServerEnabled')]"
+							},
+							{
+								"name": "IdentityServerHost",
+								"value": "[ parameters('identityServerHost')]"
+							},
+							{
+								"name": "InvoiceGeniusUrl",
+								"value": "[ parameters('invoiceGeniusUrl')]"
+							},
+							{
+								"name": "SearchProvider",
+								"value": "[ variables('SearchProvider')]"
+							},
+							{
+								"name": "SearchServers",
+								"value": "[reference(concat(deployment().name, '-containerinstance')).outputs.containerIPv4Address.value]"
+							},
+							{
+								"name": "SearchUsername",
+								"value": "[ parameters('SearchHtml').username]"
+							},
+							{
+								"name": "SearchPassword",
+								"value": "[ parameters('SearchHtml').password]"
+							},
+							{
+								"name": "Tardis.Host",
+								"value": "[ parameters('tardisHost')]"
+							},
+							{
+								"name": "Tardis.SigningKey",
+								"value": "[ parameters('TardisSigningKey')]"
+							},
+							{
+								"name": "TwilioAccountSID",
+								"value": "[ parameters('twilio').AccountSID]"
+							},
+							{
+								"name": "TwilioAuthToken",
+								"value": "[ parameters('twilio').AuthToken]"
+							},
+							{
+								"name": "TwilioEnableCallback",
+								"value": "[ parameters('twilio').EnableCallback]"
+							},
+							{
+								"name": "TwilioTestMode",
+								"value": "[ parameters('twilio').TestMode]"
+							}
+						],
+						"connectionStrings": [
+						{
+							"name": "DistributedCache",
+							"type": "Custom",
+							"connectionString": "[reference(concat(deployment().name, '-rediscache')).outputs.redisConnectionString.value]"
+						},
+						{
+							"name": "DirectDebitServiceBusConnectionString",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').DirectDebit)), variables('existingServiceBus').DirectDebit, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						},
+						{
+							"name": "UtilitiesManagerServiceBusConnectionString",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').Utilities)), variables('existingServiceBus').Utilities, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "admin",
+						"appsettings": [
+							{
+								"name": "auth0AppUrl",
+								"value": "[ parameters('auth0AppUrl')]"
+							}],
+						"connectionStrings": [],
+						"ipSecurityRestrictions": []
+					}]
+				},
+				"sharedAppSettings": {
+					"value": [
+						{
+							"name": "Environment",
+							"value": "[ parameters('environmentName')]"
+						},
+						{
+							"name": "RaygunEnabled",
+							"value": "false"
+						},
+						{
+							"name": "EWayEncryptionKey",
+							"value": "[ parameters('eWayEncryptionKey')]"
+						},
+						{
+							"name": "EWayAPIKey",
+							"value": "[ parameters('eWayAPIKey')]"
+						},
+						{
+							"name": "EWayUseSandbox",
+							"value": "[ parameters('eWayUseSandbox')]"
+						},
+						{
+							"name": "EWayAPIPassword",
+							"value": "[ parameters('eWayAPIPassword')]"
+						},
+						{
+							"name": "PTHost",
+							"value": "[ variables('pTHost')]"
+						},
+						{
+							"name": "PropertyTreeHost",
+							"value": "[ parameters('propertyTreeHost')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.url",
+							"value": "[ parameters('sumoUrl')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.source",
+							"value": "[ parameters('sumoSource')]"
+						},
+						{
+							"name": "Signalr",
+							"value": "[ parameters('Signalr')]"
+						}
+					]
+				},
+				"sharedConnectionStrings": {
+					"value": [{
+							"name": "OutboundMessageStorage",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').OutboundMessageStorage)), variables('existingStorageAccount').OutboundMessageStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]"
+						},
+						{
+							"name": "AzureStorage",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureStorage)), variables('existingStorageAccount').AzureStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]"
+						},
+						{
+							"name": "BedrockConnectionString",
+							"type": "Custom",
+							"connectionString":"[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbUser')),'#generic-user-password#',parameters('defaultDbUserPassword'))]"
+						}
+					]
+				}
+		},
+		"templateLink": {
+			"uri": "[ variables('templatePaths').webapp.root ]",
+			"contentVersion": "1.0.0.0"
+		}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-api')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"dependsOn": [
+			"[concat(deployment().name, '-kv')]"
+		],
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"deploymentKeyVaultName": {
+					"value": "[reference(concat(deployment().name, '-kv')).outputs.keyVaultName.value]"
+				},
+				"farmName": {
+					"value": "api"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"vnetName": {
+					"value": "[parameters('vnetName')]"
+				},
+				"vnetResourceGroupName": {
+					"value": "[parameters('vnetResourceGroupName')]"
+				},
+				"sites": {
+					"value": [{
+							"name": "external",
+							"appsettings": [],
+							"connectionStrings": [],
+							"ipSecurityRestrictions": []
+						},
+						{
+							"name": "tardis-api",
+							"appsettings": [
+							{
+								"name": "Tardis.SigningKey",
+								"value": "[ parameters('TardisSigningKey')]"
+							},
+							{
+								"name": "ApplicationKey.Tardis",
+								"value": "[ parameters('applicationKeyTardis')]"
+							}],
+							"connectionStrings": [
+							{
+								"name": "AzureStorage",
+								"type": "Custom",
+								"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureStorage)), variables('existingStorageAccount').AzureStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]"
+							}],
+							"ipSecurityRestrictions": []
+						},
+						{
+							"name": "signalr",
+							"appsettings": [],
+							"connectionStrings": [],
+							"ipSecurityRestrictions": []
+						}
+					]
+				},
+				"sharedAppSettings": {
+					"value": [
+						{
+							"name": "Environment",
+							"value": "[ parameters('environmentName')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.url",
+							"value": "[ parameters('sumoUrl')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.source",
+							"value": "[ parameters('sumoSource')]"
+						}
+					]
+				},
+				"sharedConnectionStrings": {
+					"value": [{
+						"name": "BedrockConnectionString",
+						"type": "Custom",
+						"connectionString": "[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbUser')),'#generic-user-password#',parameters('defaultDbUserPassword'))]"
+					}]
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').webapp.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-sqldb')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"administratorLoginPassword": {
+					"value": "[parameters('dbAdministratorLoginPassword')]"
+				},
+				"databaseCopySource": {
+					"value": "[variables('copyDatabaseSource')]"
+				},
+				"databaseName": {
+					"value": "bedrock"
+				},
+				"existingDatabaseConnectionString": {
+					"value": "[parameters('existingDatabaseConnectionString')]"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').sqlserver.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-workerstorage')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"name": {
+					"value": "workerstorage"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').storageaccount.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-workers')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"dependsOn": [
+			"[concat(deployment().name, '-kv')]",
+			"[concat(deployment().name, '-workerstorage')]"
+		],
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"farmName": {
+					"value": "workers"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"sites": {
+					"value": [
+					{
+						"name": "bkstmnt",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "AzureWebJobsServiceBus",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').BankStatement)), variables('existingServiceBus').BankStatement, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "ddbat",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "AzureWebJobsServiceBus",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').DirectDebit)), variables('existingServiceBus').DirectDebit, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "mvhub",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "UtilitiesManagerServiceBusConnectionString",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').Utilities)), variables('existingServiceBus').Utilities, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "inwh",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "AzureWebJobsServiceBus",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').InvoiceWhisperer)), variables('existingServiceBus').InvoiceWhisperer, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "mnwh",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "PropertyTreeServiceBusConnectionString",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').Maintenance)), variables('existingServiceBus').Maintenance, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						},
+						{
+							"name": "sync-storage-connection",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureWebJobsStorage)), variables('existingStorageAccount').AzureWebJobsStorage, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					},
+					{
+						"name": "riwh",
+						"appsettings": [],
+						"connectionStrings": [
+						{
+							"name": "AzureWebJobsServiceBus",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').RecurringInvoice)), variables('existingServiceBus').RecurringInvoice, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						}],
+						"ipSecurityRestrictions": []
+					}
+				]
+				},
+				"vnetName": {
+					"value": "[parameters('vnetName')]"
+				},
+				"vnetResourceGroupName": {
+					"value": "[parameters('vnetResourceGroupName')]"
+				},
+				"sharedAppSettings": {
+					"value": [
+						{
+							"name": "Environment",
+							"value": "[ parameters('environmentName')]"
+						},
+						{
+							"name": "PropertyTreeHost",
+							"value": "[ parameters('propertyTreeHost')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.url",
+							"value": "[ parameters('sumoUrl')]"
+						},
+						{
+							"name": "serilog.write-to.sumologic.source",
+							"value": "[ parameters('sumoSource')]"
+						}
+					]
+				},
+				"sharedConnectionStrings": {
+					"value": [{
+							"name": "AzureWebJobsDashboard",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureWebJobsDashboard)), variables('existingStorageAccount').AzureWebJobsDashboard, reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value)]"
+						},
+						{
+							"name": "AzureWebJobsStorage",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureWebJobsStorage)), variables('existingStorageAccount').AzureWebJobsStorage, reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value)]"
+						},
+						{
+							"name": "AzureStorage",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingStorageAccount').AzureStorage)), variables('existingStorageAccount').AzureStorage, reference(concat(deployment().name, '-storage')).outputs.primaryConnectionString.value)]"
+						},
+						{
+							"name": "BedrockConnectionString",
+							"type": "Custom",
+							"connectionString": "[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbUser')),'#generic-user-password#',parameters('defaultDbUserPassword'))]" 
+						}
+					]
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').webapp.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-workers-scheduler')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"dependsOn": [
+			"[concat(deployment().name, '-workers')]",
+			"[concat(deployment().name, '-kv')]",
+			"[concat(deployment().name, '-containerinstance')]",
+			"[concat(deployment().name, '-workerstorage')]"
+		],
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"farmName": {
+					"value": "workers-scheduler"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"sites": {
+					"value": "[if(variables('isProd'), variables('schedulerWebJobConfig').prod, variables('schedulerWebJobConfig').dev)]"
+				},
+				"vnetName": {
+					"value": "[parameters('vnetName')]"
+				},
+				"vnetResourceGroupName": {
+					"value": "[parameters('vnetResourceGroupName')]"
+				},
+				"sharedAppSettings": {
+					"value": [
+					{
+						"name": "Environment",
+						"value": "[ parameters('environmentName')]"
+					},
+					{
+						"name": "PropertyTreeHost",
+						"value": "[ parameters('propertyTreeHost')]"
+					},
+					{
+						"name": "serilog.write-to.sumologic.url",
+						"value": "[ parameters('sumoUrl')]"
+					},
+					{
+						"name": "serilog.write-to.sumologic.source",
+						"value": "[ parameters('sumoSource')]"
+					},
+					{
+						"name": "SearchServers",
+						"value": "[reference(concat(deployment().name, '-containerinstance')).outputs.containerIPv4Address.value]"
+					},
+					{
+						"name": "Tardis.Host",
+						"value": "[ parameters('tardisHost')]"
+					},
+					{
+						"name": "Tardis.SigningKey",
+						"value": "[ parameters('TardisSigningKey')]"
+					},
+					{
+						"name": "TwilioAccountSID",
+						"value": "[ parameters('twilio').AccountSID]"
+					},
+					{
+						"name": "TwilioAuthToken",
+						"value": "[ parameters('twilio').AuthToken]"
+					},
+					{
+						"name": "TwilioEnableCallback",
+						"value": "[ parameters('twilio').EnableCallback]"
+					},
+					{
+						"name": "TwilioTestMode",
+						"value": "[ parameters('twilio').TestMode]"
+					}]
+				},
+				"sharedConnectionStrings": {
+					"value": [{
+							"name": "AzureWebJobsDashboard",
+							"type": "Custom",
+							"connectionString": "[reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value]"
+						},
+						{
+							"name": "AzureWebJobsStorage",
+							"type": "Custom",
+							"connectionString": "[reference(concat(deployment().name, '-workerstorage')).outputs.primaryConnectionString.value]"
+						},
+						{
+							"name": "PropertyTreeServiceBusConnectionString",
+							"type": "Custom",
+							"connectionString": "[if(not(empty(variables('existingServiceBus').Maintenance)), variables('existingServiceBus').Maintenance, reference(concat(deployment().name, '-sb')).outputs.connectionStrings.value.fullAccess)]"
+						},
+						{
+							"name": "BedrockConnectionString",
+							"type": "Custom",
+							"connectionString":"[replace(replace(reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.genericDatabaseConnectionString.value,'#generic-user#',parameters('defaultDbServiceUser')),'#generic-user-password#',parameters('defaultDbServiceUserPassword'))]"
+						}
+					]
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').webapp.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-rediscache')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"name": {
+					"value": "rediscache"
+				},
+				"redisCacheCapacity":{
+					"value": "[ if(variables('isProd'), 1, 0)]"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').rediscache.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-containerinstance')]",
+		"type": "Microsoft.Resources/deployments",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				},
+				"containerName": {
+					"value": "mongo"
+				},
+				"containerURI": {
+					"value": "[concat(variables('registryServer'), '/mongodb:latest')]"
+				},
+				"numberCores": {
+					"value": "1"
+				},
+				"memory": {
+					"value": "1.5"
+				},
+				"ports": {
+					"value": [{
+						"protocol": "TCP",
+						"port": 27017
+					}]
+				},
+				"restartPolicy": {
+					"value": "Always"
+				},
+				"imageRegistryCredentials": {
+					"value": [{
+						"server": "[variables('registryServer')]",
+						"username": "[parameters('acrName')]",
+						"password": "[parameters('acrPassword')]"
+					}]
+				},
+				"environmentVariables": {
+					"value": [{
+							"name": "MONGO_INITDB_ROOT_USERNAME",
+							"value": "[ variables('mongodb').username ]"
+						},
+						{
+							"name": "MONGO_INITDB_ROOT_PASSWORD",
+							"value": "[ variables('mongodb').password ]"
+						}
+					]
+				},
+				"existingContainerInstanceIp": {
+					"value": "[parameters('existingContainerInstanceIp')]"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').containerinstance.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"name": "[concat(deployment().name, '-sb')]",
+		"type": "Microsoft.Resources/deployments",
+		"condition": "[ empty(variables('existingServiceBus').Default)]",
+		"apiVersion": "2018-05-01",
+		"properties": {
+			"mode": "Incremental",
+			"parameters": {
+				"namespace": {
+					"value": "sbn"
+				},
+				"namePrefix": {
+					"value": "[ variables('namePrefix') ]"
+				},
+				"location": {
+					"value": "[variables('globalParameters').location]"
+				},
+				"geoReplication": {
+					"value": "[ parameters('geoReplication') ]"
+				},
+				"templatePaths": {
+					"value": "[ variables('templatePaths') ]"
+				},
+				"standardTags": {
+					"value": "[variables('globalParameters').standardTags]"
+				}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').servicebus.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+		}
+	},
+	{
+		"apiVersion": "2017-04-01",
+		"name": "[concat(variables('namePrefix').primary,'sbn', '/', variables('maintenanceSbQueues')[copyIndex()])]",
+		"type": "Microsoft.ServiceBus/namespaces/queues",
+		"condition": "[ empty(variables('existingServiceBus').Default)]",
+		"dependsOn": [
+			"[concat(deployment().name, '-sb')]"
+		],
+		"copy": {
+			"name": "queueLoop",
+			"count": "[length(variables('maintenanceSbQueues'))]"
+		},
+		"properties": {
+			"lockDuration": "PT5M",
+			"maxSizeInMegabytes": 5120,
+			"requiresDuplicateDetection": "false",
+			"requiresSession": "false",
+			"defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+			"deadLetteringOnMessageExpiration": "false",
+			"duplicateDetectionHistoryTimeWindow": "PT10M",
+			"maxDeliveryCount": "10",
+			"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+			"enablePartitioning": "false",
+			"enableExpress": "false"
+		}
+		},
+		{
+		"apiVersion": "2017-04-01",
+		"name": "[concat(variables('namePrefix').primary,'sbn', '/', variables('syncServiceBusItems').topics[copyIndex()].name)]",
+		"type": "Microsoft.ServiceBus/namespaces/topics",
+		"condition": "[ empty(variables('existingServiceBus').Default)]",
+		"dependsOn": [
+			"[concat(deployment().name, '-sb')]"
+		],
+		"copy": {
+			"name": "TopicLoop",
+			"count": "[length(variables('syncServiceBusItems').topics)]"
+		},
+		"properties": {
+			"lockDuration": "PT5M",
+			"maxSizeInMegabytes": 5120,
+			"requiresDuplicateDetection": "false",
+			"requiresSession": "false",
+			"defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+			"deadLetteringOnMessageExpiration": "false",
+			"duplicateDetectionHistoryTimeWindow": "PT10M",
+			"maxDeliveryCount": "10",
+			"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+			"enablePartitioning": "false",
+			"enableExpress": "false"
+		}
+		},
+		{
+			"name": "[concat(deployment().name, '-cdn')]",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-05-01",
+			"dependsOn": [
+			"[concat(deployment().name, '-cdn-storage')]"
+			],
+			"properties": {
+				"mode": "Incremental",
+				"parameters": {
+					"namePrefix": {
+						"value": "[ variables('namePrefix') ]"
+					},
+					"location": {
+						"value": "[variables('globalParameters').location]"
+					},
+					"geoReplication": {
+						"value": "[ parameters('geoReplication') ]"
+					},
+					"templatePaths": {
+						"value": "[ variables('templatePaths') ]"
+					},
+					"standardTags": {
+						"value": "[variables('globalParameters').standardTags]"
+					},                      
+					"existingStorageAccount": {                        
+						"value": "[reference(concat(deployment().name, '-cdn-storage')).outputs.primaryConnectionString.value]"
+					},
+					"sku": {
+						"value": "Standard_Verizon"
+					}
+			},
+			"templateLink": {
+				"uri": "[ variables('templatePaths').cdn.root ]",
+				"contentVersion": "1.0.0.0"
+			}
+			}
+		},
+		{
+			"name": "[concat(deployment().name, '-cdn-storage')]",
+			"type": "Microsoft.Resources/deployments",              
+			"apiVersion": "2018-05-01",
+			"properties": {
+				"mode": "Incremental",
+				"parameters": {
+					"namePrefix": {
+						"value": "[ variables('namePrefix') ]"
+					},
+					"location": {
+						"value": "[variables('globalParameters').location]"
+					},
+					"geoReplication": {
+						"value": "[ parameters('geoReplication') ]"
+					},
+					"templatePaths": {
+						"value": "[ variables('templatePaths') ]"
+					},
+					"standardTags": {
+						"value": "[variables('globalParameters').standardTags]"
+					},
+					"name": {
+						"value": "cdn-storage"
+					}
+				},
+				"templateLink": {
+					"uri": "[ variables('templatePaths').storageaccount.root ]",
+					"contentVersion": "1.0.0.0"
+				}
+			}
+		}
+],
+"outputs": {
+	"georeplication": {
+		"type": "bool",
+		"value": "[parameters('geoReplication')]"
+	},
+	"location": {
+		"type": "string",
+		"value": "[ variables('location').primary]"
+	},
+	"html-site-name-primary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').primary,'-html') ]"
+	},
+	"html-site-name-secondary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').secondary,'-html') ]"
+	},
+	"admin-site-name-primary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').primary,'-admin') ]"
+	},
+	"admin-site-name-secondary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').secondary,'-admin') ]"
+	},
+	"api-external-site-name-primary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').primary,'-api-external') ]"
+	},
+	"api-external-site-name-secondary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').secondary,'-api-external') ]"
+	},
+	"api-tardis-site-name-primary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').primary,'-api-tardis') ]"
+	},
+	"api-tardis-site-name-secondary": {
+		"type": "string",
+		"value": "[ concat(variables('siteNamePrefix').secondary,'-api-tardis') ]"
+	},
+	"keyvault-name": {
+		"type": "string",
+		"value": "[reference(concat(deployment().name, '-kv')).outputs.keyVaultName.value]"
+	},
+	"BedrockConnectionString": {
+		"type": "string",
+		"value": "[reference(concat(deployment().name, '-sqldb'), '2018-05-01').outputs.databaseConnectionString.value]"
+	},
+	"existingAzureStorage": {
+		"type": "string",
+		"value": "[ variables('existingStorageAccount').Default]"
+	},
+	"OutboundMessageStorage": {
+		"type": "string",
+		"value": "[ variables('existingStorageAccount').OutboundMessageStorage]"
+	},
+	"testParameter": {
+		"type": "string",
+		"value": "[ parameters('testParameter')]"
+	},
+	"cdnHostName": {
+		"type": "string",
+		"value": "[reference(concat(deployment().name, '-cdn'), '2018-05-01').outputs.cdnHostName.value]"
+	},
+	"cdnStorageAccountName": {
+		"type": "string",
+		"value": "[reference(concat(deployment().name, '-cdn'), '2018-05-01').outputs.cdnStorageAccountName.value]"
+	},
+	"cdnStorageAccount": {
+		"type": "string",
+		"value": "[reference(concat(deployment().name, '-cdn'), '2018-05-01').outputs.cdnStorageAccount.value]"
+	}
+}
+}
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>To be fair... it does deploy</h3>
+					<ul>
+						<li>12 app services</li>
+						<li>4 app service plans</li>
+						<li>Redis</li>
+						<li>CDN</li>
+						<li>Keyvault</li>
+						<li>Service bus</li>
+						<li>4 storage accounts</li>
+						<li>SQL db</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Pulumi at it's simplest</h3>
+					<pre>
+						<code class="hljs typescript" style="font-size: x-small;">import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure";
+const resourceGroup = new azure.core.ResourceGroup(`demo-rg`, {
+	location:  azure.Locations.AustraliaEast,    
+});
+const resourceGroupArgs = {
+	resourceGroupName: resourceGroup.name,
+	location: resourceGroup.location,
+};
+const storage = new azure.storage.Account(`storage`, {    
+	...resourceGroupArgs,
+	accountTier: "Standard",
+	accountReplicationType: "LRS",
+	accountKind: "Storage",
+});
+const blob = new azure.storage.ZipBlob(`zipblob`, {
+	resourceGroupName: resourceGroup.name,
+	storageAccountName: storage.name,
+	storageContainerName: storage.name,
+	type: "block",
+	content: new pulumi.asset.FileArchive("wwwroot"),
+});
+const codeBlobUrl = azure.storage.signedBlobReadUrl(blob, storage);
+const appServicePlan = new azure.appservice.Plan(`asp`, {
+	...resourceGroupArgs,
+	kind: "App",
+	sku: {
+		tier: "Basic",
+		size: "B1",
+	},
+});
+const webApp = new azure.appservice.AppService(`webapp`, {
+	...resourceGroupArgs,
+	appServicePlanId: appServicePlan.id,
+	appSettings: {
+		"WEBSITE_RUN_FROM_ZIP": codeBlobUrl,
+	},
+});
+export const WebAppUrl = webApp.defaultSiteHostname;
+						</code>
+					</pre>					
+				</section>
+				<section>
+					<h2>Or one we'll kick off now</h2>
+					<pre>
+							<code class="hljs typescript" style="font-size: x-small;">import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure";
+import * as moment from 'moment';
+const resourceGroup = new azure.core.ResourceGroup("demo-rg");
+async function handler(context: azure.appservice.Context&lt;azure.appservice.HttpResponse&gt;, request: azure.appservice.HttpRequest) {
+	return {
+		status: 200,
+		headers: {
+			"content-type": "text/plain",
+		},
+		body: `Hello from Azure Function!! ${moment.now()}`,
+	};
+}
+const fn = new azure.appservice.HttpEventSubscription("demo-func", {
+	resourceGroup,
+	callback: handler,
+});
+export const functionAddress = fn.url;
+							</code>
+						</pre>
+				</section>
+				<section>
+					<h3>Pulumi Separation of Concerns</h2>
+					<img width="400" height="238" data-src="https://www.pulumi.com/images/docs/reference/engine-block-diagram.png" alt="Pulumi Engine">
+					<p>Use the language you prefer</p>
+					<p>Target many cloud providers</p>
+					<p>With one common pluggable model</p>				
+				</section>
+				<section>
+					<h2>Options</h2>
+					<h5>Language</h5>
+					<ul>
+						<li>Typescript - strong typing</li>
+						<li>Javascript</li>
+						<li>Python</li>
+						<li>C# - strong typing</li>
+					</ul>
+					<h5>Target</h5>
+					<p>AWS, Azure, DigitalOcean, Google Cloud, Kubernetes, Linode, OpenStack, Packet.net, vSphere</p>					
+					<h5>One project/stack can orchestrate any combination of these providers</h5>
+				</section>
+				<section>
+					<h3>State</h3>
+					<p>Let's check the one we kicked off</p>
+					<p>Check it's state out, local login</p>
+					<p>Aside from language, this is the next special ingredient</p>
+					<p>Instead of relying on the cloud platform to apply incremental or differential changes, Pulumi will store the current state of a stack</p>
+					<p>You choose the state management, use there’s, use file or blob storage, doesn’t really matter</p>
+				</section>
+				<section>
+					<h3>Key Concepts</h3>
+				</section>
+				<section>
+					<h5>
+						Projects
+					</h5>
+						<p>
+							Defines a single group of deployable items
+						</p>
+						<p>
+							Contains one or many stacks
+						</p>
+						<p>
+							Contains the infrastructure definiton
+						</p>
+				</section>
+				<section>
+					<h5>
+						Stacks
+					</h5>
+					<ul>								
+						<p>A stack is the actual deployment instance of the project</p>
+						<p>Each stack has it's own configuration and state</p>
+					</ul>
+					
+				</section>
+				
+				<section>
+					<h5>State</h5>
+					<p>Stores the point in time cloud confuration</p>
+					<p>Don't requery the Cloud Provider at deployment time</p>
+					<p>Don't relie on the Cloud Provider to orchestrate</p>
+					<p>Pulumi creates it's own configurable orchestration plan</p>
+					<p>Pluggable state backends</p>
+				</section>
+				
+				<section>
+					<h2>Real world example</h2>
+					<ul>
+						<li>I have a web application</li>
+						<li>With a SQL database</li>
+						<li>Blob storage</li>
+						<li>Azure web function</li>
+						<li>This is my project</li>
+						<li>I have a dev stack</li>
+						<li>I have a prod stack</li>
+						<li>I use Azure devops to build and deploy</li>
+						<li>Sounds familiar!?</li>
+					</ul>
+				</section>
+				<section>
+					<h5>Becomes</h5>
+					<pre>
+						<code class="hljs typescript" style="font-size: x-small;">import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure";
+const prefix = "alxwos";
+const config = new pulumi.Config();
+const username = config.require("sqlUsername"); 
+const password = config.requireSecret("sqlPassword"); 
+const resourceGroup = new azure.core.ResourceGroup(`${prefix}-rg`, {
+	location:  azure.Locations.AustraliaEast,    
+});
+const resourceGroupArgs = {
+	resourceGroupName: resourceGroup.name,
+	location: resourceGroup.location,
+};
+const storage = new azure.storage.Account(`${prefix}storage`, {    
+	...resourceGroupArgs,
+	accountTier: "Standard",
+	accountReplicationType: "LRS",
+	accountKind: "Storage",
+});
+const sqlServer = new azure.sql.SqlServer(`${prefix}-sql`, {    
+	...resourceGroupArgs,
+	version: "12.0",    
+	administratorLogin: username,
+	administratorLoginPassword: password,    
+});
+let addFirewallRule = (name:string, start:string, end:string) => {
+	new azure.sql.FirewallRule(`${prefix}-db-fw-${name}`, {
+		startIpAddress: start,
+		endIpAddress: end,
+		serverName: sqlServer.name,
+		resourceGroupName: resourceGroup.name,
+	});
+}
+addFirewallRule("Enable Azure Resources", "0.0.0.0","0.0.0.0");
+const sqlDb = new azure.sql.Database(`${prefix}-db`, {
+	...resourceGroupArgs,
+	serverName: sqlServer.name,    
+	requestedServiceObjectiveName: "S0",    
+});
+const appServicePlan = new azure.appservice.Plan(`${prefix}-asp`, {
+	...resourceGroupArgs,
+	kind: "App",
+	sku: {
+		tier: "Basic",
+		size: "B1",
+	},
+});
+let connectionString = pulumi.all([sqlServer.name, sqlDb.name, password]).apply(([server, db, pwd]) => 
+	`Server=tcp:${server}.database.windows.net;initial catalog=${db};user ID=${username};password=${pwd};Min Pool Size=0;Max Pool Size=30;Persist Security Info=true;`);
+let logTableName = pulumi.all([resourceGroup.name]).apply(rgName => `${rgName}webapplogs`);
+const webApp = new azure.appservice.AppService(`${prefix}-as`, {
+	...resourceGroupArgs,
+	appServicePlanId: appServicePlan.id,
+	siteConfig: {
+		dotnetFrameworkVersion: "v4.0",
+		use32BitWorkerProcess: true,        
+	},
+	appSettings: {                       
+		"Values:ConnectionString": connectionString,
+		"AppServiceConfig:azureStorageResourcesConnectionString": storage.primaryConnectionString,
+		"Serilog:WriteTo:0:Args:storageTableName": logTableName,        
+		"ASPNETCORE_DETAILEDERRORS": "true",
+		"WEBSITE_NODE_DEFAULT_VERSION": "6.9.1",
+		"WEBSITE_RUN_FROM_PACKAGE": "0",
+	},
+});
+const fnApp = new azure.appservice.FunctionApp(`${prefix}-fn`, {    
+	appServicePlanId: appServicePlan.id,
+	storageConnectionString: storage.primaryConnectionString,
+	resourceGroupName: resourceGroupArgs.resourceGroupName,    
+});
+export const sqlServerName = sqlServer.fullyQualifiedDomainName;
+export const sqlDbName = sqlDb.name;
+export const webAppName = webApp.name;
+export const fnName = fnApp.name;
+						</code>
+					</pre>
+					<p>It's readable! Let's kick it off...</p>					
+				</section>	
+				<section>
+					<h2>While that's running...</h2>
+					<h5>Some more basics</h5>
+				</section>				
+				<section>
+					<h5>Configuration</h5>
+					<p>Don't use environment variables</p>
+					<p>API functions as expected</p>
+					<p>Handle secrets, pluggable backing options</p>
+					<p>Config is per stack</p>
+				</section>						
+				<section>
+					<h2>Check deployment</h2>
+					<p>Show the code</p>
+					<p>Show the deployment pipeline</p>
+					<p>Show it running</p>
+				</section>
+				<section>
+					<h2>Bonus bits</h2>
+					<p>The feedback loop</p>
+					<p>Autocomplete</p>
+					<p>All the benefits of existing language</p>
+					<p>Cross reference projects and stacks</p>
+					<p>Import existing deployed resources</p>
+				</section>
+				<section>
+					<h2>Gotchas!</h2>
+					<p>Accessing secrets</p>
+					<p>String interpolation and Output variables</p>
+					<p>State, when getting started</p>
+					<p>&nbsp;</p>
+					<p>...</p>
 				</section>
 			</div>
 		</div>
-
 		<script src="js/reveal.js"></script>
-
 		<script>
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+				history: true,
+				transition: 'slide',
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
