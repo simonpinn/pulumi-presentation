@@ -2002,45 +2002,32 @@
 				<section>
 					<h3>Pulumi at it's simplest</h3>
 					<pre>
-						<code class="hljs typescript" style="font-size: x-small;">import * as pulumi from "@pulumi/pulumi";
-import * as azure from "@pulumi/azure";
-const resourceGroup = new azure.core.ResourceGroup(`demo-rg`, {
-	location:  azure.Locations.AustraliaEast,    
+						<code class="hljs typescript" style="font-size: x-small;">import * as azure from "@pulumi/azure";
+import * as pulumi from "@pulumi/pulumi";
+import { StorageStaticWebsite } from "./StaticWebsite";
+const resourceGroup = new azure.core.ResourceGroup("website-rg", {
+	location: azure.Locations.AustraliaEast,
 });
-const resourceGroupArgs = {
+const storageAccount = new azure.storage.Account("websitesa", {
 	resourceGroupName: resourceGroup.name,
-	location: resourceGroup.location,
-};
-const storage = new azure.storage.Account(`storage`, {    
-	...resourceGroupArgs,
-	accountTier: "Standard",
 	accountReplicationType: "LRS",
-	accountKind: "Storage",
+	accountTier: "Standard",
+	accountKind: "StorageV2",
 });
-const blob = new azure.storage.ZipBlob(`zipblob`, {
-	resourceGroupName: resourceGroup.name,
-	storageAccountName: storage.name,
-	storageContainerName: storage.name,
-	type: "block",
-	content: new pulumi.asset.FileArchive("wwwroot"),
+const staticWebsite = new StorageStaticWebsite("website-static", {
+	accountName: storageAccount.name,
 });
-const codeBlobUrl = azure.storage.signedBlobReadUrl(blob, storage);
-const appServicePlan = new azure.appservice.Plan(`asp`, {
-	...resourceGroupArgs,
-	kind: "App",
-	sku: {
-		tier: "Basic",
-		size: "B1",
-	},
-});
-const webApp = new azure.appservice.AppService(`webapp`, {
-	...resourceGroupArgs,
-	appServicePlanId: appServicePlan.id,
-	appSettings: {
-		"WEBSITE_RUN_FROM_ZIP": codeBlobUrl,
-	},
-});
-export const WebAppUrl = webApp.defaultSiteHostname;
+["index.html", "404.html"].map(name =>
+	new azure.storage.Blob(name, {
+		name,        
+		storageAccountName: storageAccount.name,
+		storageContainerName: staticWebsite.webContainerName,
+		type: "block",
+		source: `./wwwroot/${name}`,
+		contentType: "text/html",
+	}),
+);
+export const staticEndpoint = staticWebsite.endpoint;
 						</code>
 					</pre>					
 				</section>
@@ -2050,7 +2037,9 @@ export const WebAppUrl = webApp.defaultSiteHostname;
 							<code class="hljs typescript" style="font-size: x-small;">import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
 import * as moment from 'moment';
-const resourceGroup = new azure.core.ResourceGroup("demo-rg");
+const resourceGroup = new azure.core.ResourceGroup("demo-rg",{
+    location: azure.Locations.AustraliaEast,
+});
 async function handler(context: azure.appservice.Context&lt;azure.appservice.HttpResponse&gt;, request: azure.appservice.HttpRequest) {
 	return {
 		status: 200,
