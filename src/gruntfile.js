@@ -109,7 +109,6 @@ module.exports = grunt => {
 					livereload: true,
 					open: true,
 					useAvailablePort: true,
-					history:true,
 				}
 			}
 		},
