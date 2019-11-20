@@ -32,7 +32,7 @@
 					<ul>
 						<li>Full stack dev with a mostly Microsoft background</li>
 						<li>20 years as a dev, last 12 as a contractor</li>
-						<li>C# is my mainstay, though love F#</li>						
+						<li>C# is my mainstay, though I love F#</li>						
 						<li>Not afraid of the console!!!!</li>
 					</ul>
 					
@@ -60,7 +60,7 @@
 							</ul>
 						</li>
 						<li>Presented a cutdown of this to one of my clients</li>
-						<li>Playing in real life with another client</li>
+						<li>Experimenting with Pulumi for another client</li>
 						<li>I'll be pointing out some aspects that I find interesting...</li>
 					</ul>
 				</section>
@@ -78,7 +78,7 @@
 						<img src="img/blackops.jpg" width="300" />
 					</div>
 					<p class="fragment fade-in">DevOps became a thing, we used CLIs and desired state orchestrators/templates</p>
-					<p class="fragment fade-in">Puppet, Chef, ARM, Terraform, and whatever cloud CLI was available</p>					
+					<p class="fragment fade-in">Puppet, Chef, ARM, Terraform, whatever cloud CLI was available</p>					
 					<aside class="notes">
 						WHY another framework
 						WHY are we solving this problem again
@@ -89,7 +89,7 @@
 					<ul>
 						<p class="fragment fade-in">I expect to express my desired state intention</p>
 						<p class="fragment fade-in">I expect this to be simple</p>
-						<p class="fragment fade-in">Who finds ARM simple….!? (or HCL)</p>
+						<p class="fragment fade-in">But who finds ARM simple….!? (or HCL)</p>
 					</ul>
 				</section>
 				<section>
@@ -2088,7 +2088,7 @@ export const functionAddress = fn.url;
 						<p>Check it's state out, local login</p>
 					</div>					
 					<p class="fragment fade-in">Instead of relying on the cloud platform to apply incremental or differential changes, Pulumi will store the current state of a stack</p>
-					<p class="fragment fade-in">You choose the state management, use there’s, use file or blob storage, or their state service</p>
+					<p class="fragment fade-in">You choose the state management, use file or blob storage, or their state service</p>
 				</section>
 				<section>
 					<h3>Key Concepts</h3>
@@ -2122,7 +2122,7 @@ export const functionAddress = fn.url;
 					<h5>State</h5>
 					<p>Stores the point in time cloud configuration</p>
 					<p>Don't requery the Cloud Provider at deployment time</p>
-					<p>Don't relie on the Cloud Provider to orchestrate</p>
+					<p>Don't rely on the Cloud Provider to orchestrate</p>
 					<p>Pulumi creates it's own configurable orchestration plan</p>
 					<p>Pluggable state backends</p>
 				</section>
@@ -2130,7 +2130,7 @@ export const functionAddress = fn.url;
 				<section>
 					<h2>Real world example</h2>
 					<ul>
-						<li>I have a web application</li>
+						<li>I have an Azure web application</li>
 						<li>With a SQL database</li>
 						<li>Blob storage</li>
 						<li>Azure web function</li>
