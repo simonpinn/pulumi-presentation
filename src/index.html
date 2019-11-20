@@ -23,10 +23,11 @@
 			<div class="slides">
 				<section>
 					<h1>Pulumi</h1>
+					<h4>Modern infrastructure as code</h4>
 					<h5>Simon Pinn</h5>
 				</section>
 				<section>
-					<h2>Intro</h2>
+					<h2>Who am I?</h2>
 					
 					<ul>
 						<li>Full stack dev with a mostly Microsoft background</li>
@@ -44,42 +45,52 @@
 					<p>Pronunciation</p>
 					<p style="font-style: italic;">"Pull me (up)"</p>
 					<p style="font-size: small;">At least that's how I read it</a>
+					<div>
+						<img class="fragment fade-in-then-out" src="img/hard-pull-up.jpg" width="300" />
+						<img class="fragment fade-in" src="img/easy-pull-up.jpg" width="350" />
+					</div>
 				</section>
 				<section>
-					<h2>Background</h2>
+					<h2>Why am I here?</h2>
 					<ul>
-						<li>I am not an expert!</li>
+						<li>Not an expert!</li>
 						<li>Captivated by a presentation at NDC, by Jake Ginnivan
 							<ul>
-								<li>https://github.com/JakeGinnivan/ndc-sydney-pulumi-demo</li>
+								<li><a href="https://github.com/JakeGinnivan/ndc-sydney-pulumi-demo">NDC 2019</a></li>
 							</ul>
 						</li>
 						<li>Presented a cutdown of this to one of my clients</li>
-						<li>Have been playing with it in real life with another client</li>
+						<li>Playing in real life with another client</li>
 						<li>I'll be pointing out some aspects that I find interesting...</li>
 					</ul>
 				</section>
 				<section>
 					<h2>The elevator pitch</h2>
-					<p>Infrastructure as code</p>
-					<p>Desired state expressed as code</p>
-					<p>Code, not configuration</p>
+					<img src="img/elevator.jpg" width="400" />
+					<p class="fragment fade-in">Infrastructure as code</p>
+					<p class="fragment fade-in">Desired state expressed as code</p>
+					<p class="fragment fade-in">Code, not configuration</p>
 				</section>
 				<section>					
 					<h3>The story so far...</h3>
-					<p>We used to throw this stuff to a (black) "ops" team</p>
-					<p>DevOps became a thing, we used CLIs and desired state orchestrators/templates</p>
-					<p>Puppet, Chef, ARM, Terraform, and whatever cloud CLI was available</p>
-					<p>When I put on my DevOps hat</p>
-					<ul>
-						<li>I expect to express my desired state intention</li>
-						<li>I expect this to be simple</li>
-						<li>Who finds ARM simple….!?</li>
-					</ul>
+					<div class="fragment fade-in">
+						<p>We used to throw deployment to a (black) "ops" team</p>					
+						<img src="img/blackops.jpg" width="300" />
+					</div>
+					<p class="fragment fade-in">DevOps became a thing, we used CLIs and desired state orchestrators/templates</p>
+					<p class="fragment fade-in">Puppet, Chef, ARM, Terraform, and whatever cloud CLI was available</p>					
 					<aside class="notes">
 						WHY another framework
 						WHY are we solving this problem again
 					</aside>
+				</section>
+				<section>
+					<h3>When I put on my DevOps hat</h3>
+					<ul>
+						<p class="fragment fade-in">I expect to express my desired state intention</p>
+						<p class="fragment fade-in">I expect this to be simple</p>
+						<p class="fragment fade-in">Who finds ARM simple….!? (or HCL)</p>
+					</ul>
 				</section>
 				<section>
 					<h3>ARM - Realworld</h3>
@@ -1973,10 +1984,11 @@
 }
 						</code>
 					</pre>
+					<p class="fragment fade-in">And! This uses a whole library of base linked templates</p>
 				</section>
 				<section>
 					<h3>To be fair... it does deploy</h3>
-					<ul>
+					<ul class="fragment fade-in">
 						<li>12 app services</li>
 						<li>4 app service plans</li>
 						<li>Redis</li>
@@ -2065,24 +2077,29 @@ export const functionAddress = fn.url;
 				</section>
 				<section>
 					<h2>Options</h2>
-					<h5>Language</h5>
+					<h5>Languages</h5>
 					<ul>
-						<li>Typescript - strong typing</li>
-						<li>Javascript</li>
-						<li>Python</li>
-						<li>C# - strong typing</li>
+						<li class="fragment fade-in">Typescript - strong typing</li>
+						<li class="fragment fade-in">Javascript</li>
+						<li class="fragment fade-in">Python</li>
+						<li class="fragment fade-in">C# - strong typing</li>
 					</ul>
-					<h5>Target</h5>
-					<p>AWS, Azure, DigitalOcean, Google Cloud, Kubernetes, Linode, OpenStack, Packet.net, vSphere</p>					
-					<h5>One project/stack can orchestrate any combination of these providers</h5>
+				</section>
+				<section>
+					<h2>Options</h2>
+					<h5>Targets</h5>
+					<p class="fragment fade-in">AWS, Azure, DigitalOcean, Google Cloud, Kubernetes, Linode, OpenStack, Packet.net, vSphere</p>					
+					<h5 class="fragment fade-in">One project/stack can orchestrate any combination of these providers</h5>
 				</section>
 				<section>
 					<h3>State</h3>
-					<p>Let's check the one we kicked off</p>
-					<p>Check it's state out, local login</p>
-					<p>Aside from language, this is the next special ingredient</p>
-					<p>Instead of relying on the cloud platform to apply incremental or differential changes, Pulumi will store the current state of a stack</p>
-					<p>You choose the state management, use there’s, use file or blob storage, doesn’t really matter</p>
+					<p class="fragment fade-in">Aside from language, this is the next special ingredient</p>
+					<div class="fragment fade-in">
+						<p>So let's check the one we kicked off</p>
+						<p>Check it's state out, local login</p>
+					</div>					
+					<p class="fragment fade-in">Instead of relying on the cloud platform to apply incremental or differential changes, Pulumi will store the current state of a stack</p>
+					<p class="fragment fade-in">You choose the state management, use there’s, use file or blob storage, or their state service</p>
 				</section>
 				<section>
 					<h3>Key Concepts</h3>
@@ -2106,7 +2123,7 @@ export const functionAddress = fn.url;
 						Stacks
 					</h5>
 					<ul>								
-						<p>A stack is the actual deployment instance of the project</p>
+						<p>Actual deployment instance of the project</p>
 						<p>Each stack has it's own configuration and state</p>
 					</ul>
 					
@@ -2114,7 +2131,7 @@ export const functionAddress = fn.url;
 				
 				<section>
 					<h5>State</h5>
-					<p>Stores the point in time cloud confuration</p>
+					<p>Stores the point in time cloud configuration</p>
 					<p>Don't requery the Cloud Provider at deployment time</p>
 					<p>Don't relie on the Cloud Provider to orchestrate</p>
 					<p>Pulumi creates it's own configurable orchestration plan</p>
@@ -2128,11 +2145,11 @@ export const functionAddress = fn.url;
 						<li>With a SQL database</li>
 						<li>Blob storage</li>
 						<li>Azure web function</li>
-						<li>This is my project</li>
+						<li>One Pulumi project</li>
 						<li>I have a dev stack</li>
 						<li>I have a prod stack</li>
 						<li>I use Azure devops to build and deploy</li>
-						<li>Sounds familiar!?</li>
+						<li>Sound familiar!?</li>
 					</ul>
 				</section>
 				<section>
@@ -2215,7 +2232,7 @@ export const webAppName = webApp.name;
 export const fnName = fnApp.name;
 						</code>
 					</pre>
-					<p>It's readable! Let's kick it off...</p>					
+					<p>To me it's readable! So let's kick it off...</p>					
 				</section>	
 				<section>
 					<h2>While that's running...</h2>
